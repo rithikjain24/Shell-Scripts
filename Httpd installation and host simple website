@@ -1,0 +1,8 @@
+#!/bin/bash
+yum update -y
+yum install httpd -y
+which httpd
+cd /var/www/html
+echo "Google" > index.html
+systemctl start httpd
+systemctl enable httpd
