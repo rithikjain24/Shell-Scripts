@@ -1,0 +1,7 @@
+#!/bin/bash
+host=$(<push_host.txt) #push_host.txt files contains IP's of hosts 
+
+for i in ${host[@]}
+do
+        ssh-copy-id $i #copy the ssh public key to multipe hosts defined in push_host.txt
+done
