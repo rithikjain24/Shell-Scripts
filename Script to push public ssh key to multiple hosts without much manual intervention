@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Read hosts into an array from the file
+readarray -t hosts < push_host.txt
+
+# Prompt for the destination host password
+read -s -p "Enter the destination host password: " password
+echo
+
+# Iterate over the hosts
+for host in "${hosts[@]}"; do
+    echo "Copying SSH key to $host..."
+
+    # Use sshpass to provide the password for ssh-copy-id
+    sshpass -p "$password" ssh-copy-id -o StrictHostKeyChecking=no "$host" >/dev/null 2>&1
+
+    # Check the exit status directly in the if statement
+    if [ $? -eq 0 ]; then
+        echo "SSH key successfully copied to $host."
+    else
+        echo "Failed to copy SSH key to $host."
+    fi
+done
