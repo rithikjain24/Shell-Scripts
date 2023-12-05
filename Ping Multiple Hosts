@@ -1,0 +1,11 @@
+#!/bin/bash
+host=$(<hosts.txt)
+
+for i in ${host[@]}
+do
+        echo "Output of ping $i"
+        echo
+        ping -c 2 $i
+        echo
+        echo "------------------------------------------------------------------------"
+done
