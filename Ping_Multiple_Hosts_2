@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# List of hosts to ping
+hosts=$(<hosts.txt)
+
+# Loop through each host in the array and ping it
+for i in ${hosts[@]}
+do
+    # Ping the host with a count of 2 and display the result
+    ping -c 2 $i > /dev/null
+
+    # Check the exit status of the ping command
+    if [ $? -eq 0 ]; then
+      echo "$i is reachable."
+    else
+      echo "$i is unreachable."
+    fi
+
+
+done
