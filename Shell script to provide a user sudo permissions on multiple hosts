@@ -8,21 +8,27 @@ read -p "Enter Username for which sudo needs to be configured: " username
 
 # Loop through hosts
 for host in "${hosts[@]}"; do
-    # Use double quotes around the command to properly expand variables
-    # Check if the content already exists in sudoers file
-    existing_content=$(ssh "$host" "sudo cat /etc/sudoers | grep -F '$username ALL=(ALL) NOPASSWD:ALL'")
+    # Check if the user exists on the remote host
+    user_exists=$(ssh "$host" "getent passwd $username")
 
-    if [ -n "$existing_content" ]; then
-        echo "Sudo configuration for $username on $host already exists. Skipping."
+    if [ -z "$user_exists" ]; then
+        echo "User $username does not exist on $host. Skipping sudo configuration."
     else
-        # Add sudo configuration to the file
-        ssh "$host" "sudo sh -c 'echo \"$username ALL=(ALL) NOPASSWD:ALL\" >> /etc/sudoers'"
+        # Check if the content already exists in sudoers file
+        existing_content=$(ssh "$host" "sudo cat /etc/sudoers | grep -F '$username ALL=(ALL) NOPASSWD:ALL'")
 
-        # Provide confirmation for each host
-        if [ $? -eq 0 ]; then
-            echo "Sudo configuration for $username on $host: Done"
+        if [ -n "$existing_content" ]; then
+            echo "Sudo configuration for $username on $host already exists. Skipping."
         else
-            echo "Failed to configure sudo on $host"
+            # Add sudo configuration to the file
+            ssh "$host" "sudo sh -c 'echo \"$username ALL=(ALL) NOPASSWD:ALL\" >> /etc/sudoers'"
+
+            # Provide confirmation for each host
+            if [ $? -eq 0 ]; then
+                echo "Sudo configuration for $username on $host: Done"
+            else
+                echo "Failed to configure sudo on $host"
+            fi
         fi
     fi
 done
