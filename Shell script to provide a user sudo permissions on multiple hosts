@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Read hosts from sudohosts.txt into an array
+hosts=($(<sudohosts.txt))
+
+# Prompt for the username
+read -p "Enter Username for which sudo needs to be configured: " username
+
+# Loop through hosts
+for host in "${hosts[@]}"; do
+    # Use double quotes around the command to properly expand variables
+    # Check if the content already exists in sudoers file
+    existing_content=$(ssh "$host" "sudo cat /etc/sudoers | grep -F '$username ALL=(ALL) NOPASSWD:ALL'")
+
+    if [ -n "$existing_content" ]; then
+        echo "Sudo configuration for $username on $host already exists. Skipping."
+    else
+        # Add sudo configuration to the file
+        ssh "$host" "sudo sh -c 'echo \"$username ALL=(ALL) NOPASSWD:ALL\" >> /etc/sudoers'"
+
+        # Provide confirmation for each host
+        if [ $? -eq 0 ]; then
+            echo "Sudo configuration for $username on $host: Done"
+        else
+            echo "Failed to configure sudo on $host"
+        fi
+    fi
+done
