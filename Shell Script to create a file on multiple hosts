@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Read hosts into an array from the file
+readarray -t hosts < filepushhosts.txt
+
+# Iterate over the hosts
+for host in "${hosts[@]}"; do
+
+    # Use SSH to create a file on the remote host
+    ssh $host "touch /home/ansadmin/sharma"
+
+done
