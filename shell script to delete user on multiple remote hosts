@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# sampleip.txt contains a list of host IP addresses or hostnames, one per line
+hosts=($(<sampleip.txt))
+read -p "Enter username: " user_name
+
+for host in "${hosts[@]}"; do
+    ssh "$host" "userdel -r $user_name"
+
+    echo "$user_name deleted on $host"
+done
